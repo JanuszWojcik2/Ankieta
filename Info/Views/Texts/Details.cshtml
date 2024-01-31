@@ -1,0 +1,146 @@
+﻿@using System.Security.Claims;
+@model Info.Models.ViewModels.TextWithOpinions
+
+@{
+    ViewData["Title"] = @Model.SelectedText.Title;
+}
+<article>
+    <h1 class="oswald text-primary text-center">@Model.SelectedText.Title</h1>
+    <div class="row">
+        <!-- Dane informacyjne o tekście -->
+        <section class="col-lg-3 mt-3">
+            <!--zdjęcie autora-->
+            @if (Model.SelectedText.User.Photo != null)
+            {
+                <div class="d-none d-lg-block">
+                    <img src="~/photo/mini/@Model.SelectedText.User.Photo" width="150" alt="Autor tekstu" class="rounded-circle ms-3 mb-3" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-title="@Model.SelectedText.User.FullName" data-bs-content="@Model.SelectedText.User.Information">
+                </div>
+            }
+            <div class="row">
+                <!--imię i nazwisko autora oraz data dodania-->
+                <div class="col-6 col-lg-12">
+                    <h6><i class="bi bi-person-circle me-1" title="Autor"></i><span class="text-success fw-bold">@Model.SelectedText.User.FullName</span></h6>
+                    <h6> <i class="bi bi-calendar-event me-1" title="Data dodania"></i>@Model.SelectedText.AddedDate.ToString("dd MMMM yyyy")</h6>
+                    <h6><i class="bi bi-folder2-open me-1" title="Kategoria"></i>@Model.SelectedText.Category.Name</h6>
+                </div>
+
+                <!--liczba komentarzy oraz ocena tekstu-->
+                <div class="col-6 col-lg-12">
+                    <h6><i class="bi bi-smartwatch me-1" title="Czas"></i>Czas czytania ok. @Model.ReadingTime min</h6>
+                    <h6><i class="bi bi-chat-square-text me-1" title="Liczba komenatrzy"></i>@Model.CommentsNumber @Model.Description</h6>
+                    <h6><i class="bi bi bi-trophy me-1" title="Ocena"></i><star-rating rating-avg=@Model.AverageScore rating-count=@Model.OpinionsNumber></star-rating> 
+                        @if (@Model.OpinionsNumber>0){
+                            <small class="text-secondary">(@Model.AverageScore.ToString("0.0") z @Model.OpinionsNumber)</small>
+                        }
+                    </h6>
+                </div>
+            </div>
+            @{
+                string[] tags = @Model.SelectedText.Keywords.Split(',');
+                foreach (var tag in tags)
+                {
+                            <h6 class="d-inline d-lg-block"><span class="badge bg-primary">@tag</span></h6>
+                }
+            } 
+        </section>
+
+        <!-- obrazek i treść tekstu -->
+        <section class="col-lg-9">
+            @{
+                if (!String.IsNullOrEmpty(Model.SelectedText.Graphic))
+                {
+                            <img class="img-fluid mt-3" src="~/img/@Model.SelectedText.Graphic">
+                }
+                else
+                {
+                            <hr />
+                }
+            }
+
+            <div class="col-10 offset-1 my-3">
+                <h6 class="lead fst-italic">@Model.SelectedText.Summary</h6>
+            </div>
+            <hr />
+            @Html.Raw(Model.SelectedText.Content)
+            <hr />
+        </section>
+    </div>
+</article>
+
+<div class="col-lg-9 offset-lg-3">
+    <section class="mb-3">
+        <a asp-action="Index" class="btn btn-primary">Lista tekstów</a>
+        @if (User.FindFirstValue(ClaimTypes.NameIdentifier) == Model.SelectedText.Id)
+        {
+            <a asp-action="Edit" asp-route-id="@Model?.SelectedText.TextId" class="btn btn-warning">Edycja tekstu</a>
+        }
+        @if (User.Identity.IsAuthenticated)
+        {
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#newOpinion">
+                Dodaj opinię
+            </button>
+        }
+    </section>
+
+    <!-- Modal -->
+    <div class="modal fade" id="newOpinion" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5 oswald text-primary" id="exampleModalLabel">Dodawanie opinii</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
+                </div>
+                <div class="modal-body">
+                    <partial name="~/Views/Opinions/CreatePartial.cshtml" model="@Model.NewOpinion" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section id="comments">
+        @if (!User.Identity.IsAuthenticated)
+        {
+            <div class="alert alert-info" role="alert">
+                Musisz być zalogowany(-na), aby móc przeglądać i dodawać komentarze.
+            </div>
+        }
+        else if (Model.SelectedText.Opinions == null || !Model.SelectedText.Opinions.Any())
+        {
+            <div class="alert alert-success" role="alert">
+                Dodaj pierwszy komentarz do tego tekstu.
+            </div>
+        }
+        else
+        {
+            foreach (var item in Model.SelectedText.Opinions.OrderByDescending(c => c.OpinionId))
+            {
+                <div class="d-flex shadow-sm px-3 py-1 mb-3 bg-body rounded">
+                    <div class="flex-shrink-0">
+                        <img src="~/photo/mini/@((item.User.Photo != null) ? @item.User.Photo : "user.png")" width="64" alt="Fotografia autora" class="rounded-circle">
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h6>
+                            <span class="fw-bold text-success">@item.User.FullName </span>
+                            <small class="text-secondary me-5"> dodano: @item.AddedDate.ToString("dd.MM.yyyy") </small>
+                            @if (item.Rating == null) { item.Rating = 0; }
+                            <star-rating rating-avg=(double)(@item.Rating) rating-count=1></star-rating> 
+                        </h6>
+                        <p class="smaller">@item.Comment</p>
+                    </div>
+                </div>
+            }
+        }
+    </section>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        document.querySelectorAll('[data-bs-toggle="popover"]')
+            .forEach(popover => {
+                new bootstrap.Popover(popover)
+            })
+    </script>
+
+}

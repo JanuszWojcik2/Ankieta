@@ -1,0 +1,106 @@
+﻿@model TextsViewModel
+
+@{
+    ViewData["Title"] = "Lista tekstów";
+}
+
+<div class="container">
+    <div class="row">
+
+        <!-- Wyszukiwarka -->
+        <div class="d-none d-md-block col-md-12 col-xl-3">
+            <div class="card mt-2 shadow-sm ">
+                <div class="card-body">
+                    @using (Html.BeginForm("Index", "Texts", new { PageNumber = "1" }, FormMethod.Get))
+                    { 
+                      <div class="row gt-3">
+                        <div class="form-group col-auto">
+                            <label for="Kategoria">Kategoria:</label>
+                            @Html.DropDownList("Kategoria", ViewBag.Category, "--- wszystkie ---", htmlAttributes: new { @class = "form-control" })
+                        </div>
+                        <div class="form-group col-auto">
+                            <label for="Autor">Autor(ka):</label>
+                            @Html.DropDownList("Autor", ViewBag.Author, "--- wszyscy ---", htmlAttributes: new { @class = "form-control" })
+                        </div>
+                        <div class="form-group col-auto">
+                            <label for="Fraza">Fragment tekstu:</label>
+                            <input type="text" class="form-control" id="Fraza" name="Fraza" placeholder="Szukany ciąg" value="@Model.TextsView?.Phrase">
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-4 col-auto">Filtruj</button>
+                      </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista tekstów -->
+		<div class="col-xl-9">
+            @if (Model.TextsView.TextCount > 0)
+            {
+                <!-- pętla -->
+                @foreach (var item in Model.Texts)
+                {
+                    <div class="card mt-2 shadow-sm">
+                        <div class="card-header">
+                            <h4 class="text-primary oswald">@item.Title</h4>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <img src="@Url.Content(item.Graphic == null ? "~/img/mini/"+item.CategoryId+".jpg" : "~/img/mini/"+item.Graphic)" class="img-fluid" alt="@item.Category.Name" />
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <h5 class="card-title text-success">@item.User.FullName</h5>
+                                    <p class="card-text fst-italic">@item.Summary</p>
+                                    <p class="card-text"><small class="text-muted">Opublikowano: @item.AddedDate.ToString("dd.MM.yyyy")</small></p>
+                                    <div class="position-relative">
+                                        <a href="@Url.Action("Details", "Texts", new{id = item.TextId})" class="btn btn-outline-primary position-absolute bottom-0 end-0">Czytaj >>></a>
+                                    </div>
+                                </div> <!-- card body -->
+                            </div>
+                        </div> <!-- row -->
+                    </div> <!-- card -->
+                }
+
+                <!-- pętla foreach -->
+            } else {
+                <div class="alert alert-info d-flex align-items-center mt-2" role="alert">
+                    <i class="bi bi-info-circle-fill me-3"></i>
+                    Brak tekstów do wyświetlenia. Zmień parametry filtrowania lub poszukiwany ciąg.
+                </div>
+            }
+
+        </div> <!--koniec listy z tekstami -->
+	</div> <!--koniec obszaru z danymi -->
+
+    <!-- Stronicowanie -->
+	<div class="row mt-3">
+        <nav aria-label="Nawigacja pomiędzy kolejnymi stronami">
+            <ul class="pagination">
+                @{
+                    if(Model.TextsView.PageNumber > 1)
+                    {
+                      <li class="page-item">
+                            <a class="page-link" href="@Url.Action("Index", "Texts", new{PageNumber = Model.TextsView.PageNumber - 1, Kategoria = Model.TextsView.Category, Autor = Model.TextsView.Author, Fraza = Model.TextsView.Phrase})">Poprzednia</a>
+                      </li>
+                    }
+                    for (var i=1; i<=Model.TextsView.PageCount; i++)
+                    {
+                      <li class="@(i == @Model.TextsView.PageNumber ? "page-item active" : "page-active")">
+                            
+                            <a class="page-link" asp-controller="Texts" asp-action="Index" asp-route-PageNumber="@i" asp-route-Kategoria="@Model.TextsView.Category" asp-route-Autor="@Model.TextsView.Author" asp-route-Fraza="@Model.TextsView.Phrase">@i</a>
+                      </li>
+                    }
+                    if(Model.TextsView.PageNumber < Model.TextsView.PageCount)
+                    {
+                      <li class="page-item">
+                            <a class="page-link" href="@Url.Action("Index", "Texts", new{PageNumber = Model.TextsView.PageNumber + 1, Kategoria = Model.TextsView.Category, Autor = Model.TextsView.Author, Fraza = Model.TextsView.Phrase})">Następna</a>
+                      </li>
+                    }
+                }
+            </ul>
+        </nav>
+    </div> <!-- koniec stronicowania -->
+
+</div>
+

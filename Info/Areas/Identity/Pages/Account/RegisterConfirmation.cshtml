@@ -1,0 +1,23 @@
+﻿@page
+@model RegisterConfirmationModel
+@{
+    ViewData["Title"] = "Potwierdzenie rejestracji";
+}
+
+<h1 class="oswald text-primary">@ViewData["Title"]</h1>
+@{
+    if (@Model.DisplayConfirmAccountLink)
+    {
+        <p>
+         Aplikacja jest obecnie opracowywana i nie wysyła jeszcze maili w celu potwierdzenia danych wprowadzonych podczas rejestracji konta. Kliknij poniższy przycisk, aby zatwierdzić konto w portalu InfoInfo.
+        </p>
+        <a id="confirm-link" href="@Model.EmailConfirmationUrl" class="btn btn-primary">Potwierdzam dane rejestracyjne</a>
+    }
+    else
+    {
+        <p>
+         Sprawdź swoją pocztę, aby potwierdzić założenie konta w portalu InfoInfo.
+        </p>
+    }
+}
+

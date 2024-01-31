@@ -1,0 +1,122 @@
+﻿@model IEnumerable<Info.Models.Text>
+
+@{
+    ViewData["Title"] = "Lista tekstów";
+}
+
+<h1 class="oswald text-primary">Teksty</h1>
+
+<table class="table" id="teksty">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Summary)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Keywords)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Content)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Graphic)
+            </th>
+            <th>
+                <!-- @Html.DisplayNameFor(model => model.Active) -->
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AddedDate)
+            </th>
+            <th>
+                Kategoria:
+            </th>
+            <th width="10%">
+                Autor:
+            </th>
+            <th>Dostępne operacje:</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Summary)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Keywords)
+            </td>
+            <td>
+                @if (item.Content.Length <= 75)
+                {
+                    @Html.DisplayFor(modelItem => item.Content)
+                }
+                else
+                {
+                    @(item.Content.Substring(0, 75) + "...")
+                }
+            </td>
+            <td>
+                <img src="@Url.Content(item.Graphic == null ? "~/img/mini/brak.jpg" : "~/img/mini/"+item.Graphic)" width="150" alt="@item.Category.Name" />
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Active)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AddedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Category.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.FullName)
+            </td>
+            <td>
+                <a class="btn btn-outline-primary rounded-circle my-1" title="Szczegóły" asp-action="Details" asp-route-id="@item.TextId"><i class="bi-eye" aria-label="Treść tekstu"></i></a>
+               <a class="btn btn-outline-info rounded-circle my-1" title="Opinie" asp-action="Index" asp-controller="Opinions" asp-route-id="@item.TextId"><i class="bi-chat-left-text" aria-label="Opinie o tekście"></i></a>
+                <a class="btn btn-outline-warning rounded-circle my-1" title="Edycja" asp-action="Edit" asp-route-id="@item.TextId"><i class="bi-pen-fill" aria-label="Edycja tekstu"></i></a>
+                <a class="btn btn-outline-danger rounded-circle my-1" title="Usuwanie" asp-action="Delete" asp-route-id="@item.TextId"><i class="bi-trash" aria-label="Usuwanie tekstu"></i></a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+@section Scripts{
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs5/dt-1.13.1/datatables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#teksty').DataTable({
+                language: {
+                    "decimal": "",
+                    "emptyTable": "Brak danych do wyświetlenia",
+                    "info": "Pozycje od _START_ do _END_ z _TOTAL_ rekordów",
+                    "infoEmpty": "Pozycji 0 z 0 dostępnych",
+                    "infoFiltered": "(filtrowanie z _MAX_ dostępnych pozycji)",
+                    "infoPostFix": "",
+                    "thousands": " ",
+                    "lengthMenu": "Pokaż _MENU_ pozycji",
+                    "loadingRecords": "Ładowanie...",
+                    "processing": "Przetwarzanie...",
+                    "search": "Wyszukaj:",
+                    "zeroRecords": "Nie znaleziono danych",
+                    "paginate": {
+                        "first": "Pierwsza",
+                        "last": "Ostatnia",
+                        "next": "Następna",
+                        "previous": "Poprzednia"
+                    },
+                    "aria": {
+                        "sortAscending": ": sortuje kolumnę rosnąco",
+                        "sortDescending": ": sortuje kolumnę malejąco"
+                    }
+                }
+            });
+        });
+</script>
+}

@@ -1,0 +1,74 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+}
+
+.oswald{
+    font-family: 'Oswald', sans-serif;
+    font-weight: 400;
+}
+
+.interspace div {
+    margin-bottom: 1em;
+}
+
+.ck-editor__editable {
+    min-height: 400px !important;
+}
+
+.smaller {
+    font-size: 0.875em;
+}
+
+.back {
+    background: url("../graphic/back.jpg") center no-repeat;
+    background-size: cover;
+    height: 420px;
+}
+
+.transparency {
+    background-color: rgba(0,0,0,0.5);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 8px 8px 32px 0 rgba(0, 0, 0, 0.36); 
+    border-radius: 20px;
+}
+
+.info-title {
+    font-size: 4rem;
+    font-weight: 700;
+    color: #f0ffff;
+}
+
+.bg-back {
+    background-color: #0D1740;
+}
+
+.login_icon {
+    font-size: 1.4rem;
+}
+
+
+
+.glass {
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0));
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 32px;
+}
